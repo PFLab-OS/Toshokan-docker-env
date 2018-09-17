@@ -4,5 +4,5 @@ RUN make headers_install INSTALL_HDR_PATH=/workdir
 
 FROM alpine:3.8
 RUN apk add --no-cache make g++
-COPY --from=build_header /workdir /usr/src/linux
+COPY --from=build_header /workdir /usr/src/linux-headers-4.14.34hakase
 WORKDIR /
