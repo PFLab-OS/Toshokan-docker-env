@@ -19,4 +19,5 @@ RUN yes | python3 ./depgen CONFIG_USB_XHCI_PCI
 RUN yes "" | make oldconfig
 RUN sed -i 's/=m$/=y$/g' .config
 RUN apt install -y libelf-dev
+RUN make -j`nproc` bzImage
 

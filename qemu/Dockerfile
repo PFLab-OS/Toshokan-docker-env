@@ -1,6 +1,3 @@
-FROM livadk/toshokan_buildenv_base:efd8b3a03429f8e3f7e6f0e89c4d3b73a56b377d AS build-kernel
-RUN make -j`nproc` bzImage
-
 FROM alpine:3.8 AS build-rootfs
 RUN apk add wget fakeroot
 RUN wget https://nl.alpinelinux.org/alpine/v3.8/releases/x86_64/alpine-minirootfs-3.8.0-x86_64.tar.gz
@@ -66,7 +63,7 @@ FROM alpine:3.8 AS qemu
 MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
 RUN apk add --no-cache xterm
 COPY --from=build-qemu /install /
-COPY --from=build-kernel /usr/src/linux/arch/x86/boot/bzImage .
+COPY --from=livadk/toshokan_buildenv_base:efd8b3a03429f8e3f7e6f0e89c4d3b73a56b377d /usr/src/linux/arch/x86/boot/bzImage .
 COPY --from=build-rootfs /rootfs .
 
 FROM qemu
