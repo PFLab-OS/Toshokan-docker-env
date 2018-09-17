@@ -1,4 +1,4 @@
-FROM ubuntu:16.04 AS build-kernel
+FROM ubuntu:16.04
 RUN sed -i'~' -E "s@http://(..\.)?archive\.ubuntu\.com/ubuntu@http://pf.is.s.u-tokyo.ac.jp/~awamoto/apt-mirror/@g" /etc/apt/sources.list
 RUN apt update
 RUN apt install -y wget build-essential
