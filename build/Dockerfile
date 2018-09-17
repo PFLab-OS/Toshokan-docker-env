@@ -1,4 +1,4 @@
-FROM livadk/toshokan_buildenv_base:efd8b3a03429f8e3f7e6f0e89c4d3b73a56b377d AS build_header
+FROM livadk/toshokan_buildenv_base:8706a5bf6e94126267acc5bc8e43d228ec4f268a AS build_header
 RUN make -j`nproc` bindeb-pkg
 RUN dpkg -i ../linux-headers-4.14.34hakase_4.14.34hakase-1_amd64.deb
 RUN ls /usr/src/
