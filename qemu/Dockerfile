@@ -59,14 +59,24 @@ RUN ../qemu-2.12.0/configure --enable-curses --target-list=x86_64-softmmu --stat
 RUN make -j`nproc`
 RUN make install
 
+FROM livadk/toshokan_kernel_build AS build-friendloader
+WORKDIR /
+RUN apt install -y git
+RUN git clone git@github.com:PFLab-OS/Toshokan.gitgit@github.com:PFLab-OS/Toshokan.git
+WORKDIR Toshokan
+RUN git checkout c7ff9b29eb392ba17da49d66d429418ff3745a11
+WORKDIR hakase/FriendLoader
+RUN make all
+
 FROM alpine:3.8 AS qemu
-MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
 RUN apk add --no-cache xterm
 COPY --from=build-qemu /install /
-COPY --from=livadk/toshokan_buildenv_base:8706a5bf6e94126267acc5bc8e43d228ec4f268a /usr/src/linux/arch/x86/boot/bzImage .
+COPY --from=livadk/toshokan_kernel_build /usr/src/linux/arch/x86/boot/bzImage .
 COPY --from=build-rootfs /rootfs .
+COPY --from=build-friendloader /Toshokan/hakase/FriendLoader/friend_loader.ko .
 
 FROM qemu
+MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
 ADD https://github.com/eficode/wait-for/raw/master/wait-for /usr/local/bin/
 RUN chmod +x /usr/local/bin/wait-for
 #RUN sh -c 'sh -c "qemu-system-x86_64 -smp 5 -m 4G -kernel bzImage -initrd rootfs -append \"root=/dev/ram rdinit=/sbin/init memmap=0x40000000\$0x40000000 console=ttyS0,115200\" -net nic -net user,hostfwd=tcp::2222-:22 -serial stdio -display none > /dev/null 2>&1 & "; wait-for localhost:2222 -- sleep 1'
