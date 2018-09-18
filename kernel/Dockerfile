@@ -1,5 +1,4 @@
 FROM ubuntu:16.04 AS build-kernel
-RUN sed -i'~' -E "s@http://(..\.)?archive\.ubuntu\.com/ubuntu@http://pf.is.s.u-tokyo.ac.jp/~awamoto/apt-mirror/@g" /etc/apt/sources.list
 RUN apt update
 RUN apt install -y wget build-essential
 RUN apt install -y libssl-dev fakeroot bison flex
@@ -21,5 +20,4 @@ RUN sed -i 's/=m$/=y$/g' .config
 RUN apt install -y libelf-dev
 RUN make -j`nproc` bzImage
 RUN make -j`nproc` bindeb-pkg
-RUN cd ..; mv linux-4.14.34 hoge
 RUN dpkg -i ../linux-*-4.14.34hakase_4.14.34hakase*.deb

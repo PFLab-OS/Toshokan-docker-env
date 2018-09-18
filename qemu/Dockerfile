@@ -39,7 +39,6 @@ RUN fakeroot && find | cpio --quiet -o -H newc | gzip -9 > ../rootfs
 WORKDIR /
 
 FROM ubuntu:16.04 AS build-qemu
-RUN sed -i'~' -E "s@http://(..\.)?archive\.ubuntu\.com/ubuntu@http://pf.is.s.u-tokyo.ac.jp/~awamoto/apt-mirror/@g" /etc/apt/sources.list
 RUN apt update
 RUN apt install -y \
           libglib2.0-dev \
@@ -62,7 +61,7 @@ RUN make install
 FROM livadk/toshokan_kernel_build AS build-friendloader
 WORKDIR /
 RUN apt install -y git
-RUN git clone git@github.com:PFLab-OS/Toshokan.gitgit@github.com:PFLab-OS/Toshokan.git
+RUN git clone https://github.com/PFLab-OS/Toshokan.git
 WORKDIR Toshokan
 RUN git checkout c7ff9b29eb392ba17da49d66d429418ff3745a11
 WORKDIR hakase/FriendLoader
