@@ -1,2 +1,2 @@
 #!/bin/bash
-sftp -o LogLevel=quiet -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null -P ${SSH_PORT:-2222} ${SSH_USER:-hakase}@${SSH_ADDR:-localhost} $@
+sftp -o LogLevel=quiet -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null -i /id_rsa -P ${SSH_PORT:-2222} ${SSH_USER:-hakase}@${SSH_ADDR:-localhost} $@
