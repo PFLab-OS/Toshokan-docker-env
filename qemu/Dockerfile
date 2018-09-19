@@ -7,7 +7,7 @@ RUN fakeroot && tar xf ../alpine-minirootfs-3.8.0-x86_64.tar.gz
 RUN chmod 755 .
 COPY inittab etc/inittab
 COPY interfaces etc/network/interfaces
-RUN apk add --no-cache --initdb --root . sudo openssh-server openrc busybox-initscripts
+RUN apk add --no-cache --initdb --root . sudo openssh-server openssh-sftp-server openrc busybox-initscripts
 RUN chroot . addgroup hakase
 RUN chroot . adduser -S -s /bin/sh -G hakase hakase
 RUN chroot . addgroup hakase wheel
