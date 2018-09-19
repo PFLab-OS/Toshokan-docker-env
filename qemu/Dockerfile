@@ -7,7 +7,7 @@ RUN fakeroot && tar xf ../alpine-minirootfs-3.8.0-x86_64.tar.gz
 RUN chmod 755 .
 COPY inittab etc/inittab
 COPY interfaces etc/network/interfaces
-RUN apk add --no-cache --initdb --root . sudo dropbear openrc busybox-initscripts
+RUN apk add --no-cache --initdb --root . sudo openssh-server openrc busybox-initscripts
 RUN chroot . addgroup hakase
 RUN chroot . adduser -S -s /bin/sh -G hakase hakase
 RUN chroot . addgroup hakase wheel
@@ -19,7 +19,7 @@ RUN chroot . ln -s /etc/init.d/bootmisc /etc/runlevels/boot
 RUN chroot . ln -s /etc/init.d/crond /etc/runlevels/default
 RUN chroot . ln -s /etc/init.d/devfs /etc/runlevels/sysinit
 RUN chroot . ln -s /etc/init.d/dmesg /etc/runlevels/sysinit
-RUN chroot . ln -s /etc/init.d/dropbear /etc/runlevels/default
+RUN chroot . ln -s /etc/init.d/sshd /etc/runlevels/default
 RUN chroot . ln -s /etc/init.d/hostname /etc/runlevels/boot
 RUN chroot . ln -s /etc/init.d/hwclock /etc/runlevels/boot
 RUN chroot . ln -s /etc/init.d/hwdrivers /etc/runlevels/sysinit
