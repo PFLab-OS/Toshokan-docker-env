@@ -38,6 +38,8 @@ RUN echo "net.ipv6.conf.all.disable_ipv6 = 1" >> etc/sysctl.d/local.conf
 RUN chmod 700 home/hakase
 RUN mkdir -m 700 home/hakase/.ssh
 COPY id_rsa.pub home/hakase/.ssh/authorized_keys
+RUN chroot . chown hakase:hakase /home/hakase/.ssh
+RUN chroot . chown hakase:hakase /home/hakase/.ssh/authorized_keys
 RUN fakeroot && find | cpio --quiet -o -H newc | gzip -9 > ../rootfs
 WORKDIR /
 
