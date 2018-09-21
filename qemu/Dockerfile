@@ -68,7 +68,7 @@ WORKDIR /
 RUN apt install -y git
 RUN git clone https://github.com/PFLab-OS/Toshokan.git
 WORKDIR Toshokan
-RUN git checkout c7ff9b29eb392ba17da49d66d429418ff3745a11
+RUN git checkout c7fc25ce6261bdaa8981e5e0de200bcb5cf98926
 WORKDIR hakase/FriendLoader
 RUN make all
 
