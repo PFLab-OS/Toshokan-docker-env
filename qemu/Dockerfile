@@ -89,4 +89,5 @@ COPY sftp /
 COPY ssh /
 COPY id_rsa /
 #RUN sh -c 'sh -c "qemu-system-x86_64 -smp 5 -m 4G -kernel bzImage -initrd rootfs -append \"root=/dev/ram rdinit=/sbin/init memmap=0x40000000\$0x40000000 console=ttyS0,115200\" -net nic -net user,hostfwd=tcp::2222-:22 -serial stdio -display none > /dev/null 2>&1 & "; wait-for localhost:2222 -- sleep 1'
+RUN apk add --no-cache expect
 CMD /bin/bash
