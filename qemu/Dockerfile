@@ -72,22 +72,19 @@ RUN git checkout c7fc25ce6261bdaa8981e5e0de200bcb5cf98926
 WORKDIR hakase/FriendLoader
 RUN make all
 
-FROM alpine:3.8 AS qemu
+FROM alpine:3.8
+MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
+
 RUN apk add --no-cache xterm
 COPY --from=build-qemu /install /
 COPY --from=livadk/toshokan_kernel_build /usr/src/linux/arch/x86/boot/bzImage .
 COPY --from=build-rootfs /rootfs .
 COPY --from=build-friendloader /Toshokan/hakase/FriendLoader/friend_loader.ko .
 
-FROM qemu
-MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
-ADD https://github.com/eficode/wait-for/raw/master/wait-for /usr/local/bin/
-RUN chmod +x /usr/local/bin/wait-for
 RUN apk add --no-cache bash openssh-client
 COPY qemu /
 COPY sftp /
 COPY ssh /
 COPY id_rsa /
-#RUN sh -c 'sh -c "qemu-system-x86_64 -smp 5 -m 4G -kernel bzImage -initrd rootfs -append \"root=/dev/ram rdinit=/sbin/init memmap=0x40000000\$0x40000000 console=ttyS0,115200\" -net nic -net user,hostfwd=tcp::2222-:22 -serial stdio -display none > /dev/null 2>&1 & "; wait-for localhost:2222 -- sleep 1'
-RUN apk add --no-cache expect
+#RUN sh -c 'sh -c "qemu-system-x86_64 -smp 5 -m 4G -kernel bzImage -initrd rootfs -append \"root=/dev/ram rdinit=/sbin/init memmap=0x40000000\$0x40000000 console=ttyS0,115200\" -net nic -net user,hostfwd=tcp::2222-:22 -serial stdio -display none > /dev/null 2>&1 & "'
 CMD /bin/bash
