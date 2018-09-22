@@ -1,2 +1,2 @@
 #!/bin/bash
-qemu-system-x86_64 -cpu Haswell -d cpu_reset -no-reboot -smp 5 -m 4G -D /tmp/qemu.log -kernel /bzImage -initrd /rootfs -append "root=/dev/ram rdinit=/sbin/init memmap=0x40000000\$0x40000000 console=ttyS0,115200" -net nic -net user,hostfwd=tcp::2222-:22 -serial stdio -display none > /dev/null 2>&1 &
+qemu-system-x86_64 -cpu Haswell -d cpu_reset -no-reboot -smp 5 -m 4G -D /tmp/qemu.log -loadvm snapshot1 -hda /backing.qcow2 -kernel /bzImage -initrd /rootfs -append "root=/dev/ram rdinit=/sbin/init memmap=0x40000000\$0x40000000 console=ttyS0,115200" -net nic -net user,hostfwd=tcp::2222-:22 -serial telnet:127.0.0.1:4444,server,nowait -monitor telnet:127.0.0.1:4445,server,nowait -nographic > /dev/null 2>&1 &
