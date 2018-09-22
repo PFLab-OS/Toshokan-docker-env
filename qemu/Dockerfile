@@ -99,4 +99,6 @@ COPY sftp /
 COPY ssh /
 COPY id_rsa /
 COPY --from=build-snapshot backing.qcow2 /
+ADD https://github.com/eficode/wait-for/raw/master/wait-for /usr/local/bin/
+RUN chmod +x /usr/local/bin/wait-for
 CMD /bin/bash
