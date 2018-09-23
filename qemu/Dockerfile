@@ -63,15 +63,6 @@ RUN ../qemu-2.12.0/configure --enable-curses --target-list=x86_64-softmmu --stat
 RUN make -j`nproc`
 RUN make install
 
-FROM livadk/toshokan_kernel_build AS build-friendloader
-WORKDIR /
-RUN apt install -y git
-RUN git clone https://github.com/PFLab-OS/Toshokan.git
-WORKDIR Toshokan
-RUN git checkout c7fc25ce6261bdaa8981e5e0de200bcb5cf98926
-WORKDIR hakase/FriendLoader
-RUN make all
-
 FROM alpine:3.8 AS qemu
 MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
 
@@ -79,12 +70,4 @@ RUN apk add --no-cache xterm
 COPY --from=build-qemu /install /
 COPY --from=livadk/toshokan_kernel_build /usr/src/linux/arch/x86/boot/bzImage .
 COPY --from=build-rootfs /rootfs .
-COPY --from=build-friendloader /Toshokan/hakase/FriendLoader/friend_loader.ko .
-RUN apk add --no-cache bash openssh-client
-COPY qemu /
-COPY sftp /
-COPY ssh /
-COPY id_rsa /
-ADD https://github.com/eficode/wait-for/raw/master/wait-for /usr/local/bin/
-RUN chmod +x /usr/local/bin/wait-for
-CMD /bin/bash
+CMD /bin/sh
