@@ -88,15 +88,3 @@ COPY id_rsa /
 ADD https://github.com/eficode/wait-for/raw/master/wait-for /usr/local/bin/
 RUN chmod +x /usr/local/bin/wait-for
 CMD /bin/bash
-
-#FROM qemu AS build-snapshot
-#RUN apk add --no-cache bash openssh-client netcat-openbsd
-#COPY sftp /
-#COPY id_rsa /
-#RUN qemu-img create -f qcow2 backing.qcow2 5G
-#RUN sh -c "qemu-system-x86_64 -cpu Haswell -d cpu_reset -no-reboot -smp 5 -m 4G -D /tmp/qemu.log -hda backing.qcow2 -kernel /bzImage -initrd /rootfs -append 'root=/dev/ram rdinit=/sbin/init memmap=0x40000000\$0x40000000 console=ttyS0,115200' -net nic -net user,hostfwd=tcp::2222-:22 -serial telnet:127.0.0.1:4444,server,nowait -monitor telnet:127.0.0.1:4445,server,nowait -nographic &" \
-# && sh -c "while ! sh -c 'echo exit | /sftp' ; do sleep 1; done" \
-# && sh -c "echo 'stop' | nc -q 1 localhost 4445" \
-# && sh -c "echo 'savevm snapshot1' | nc -q 1 localhost 4445" \
-# && sh -c "echo 'quit' | nc -q 1 localhost 4445"
-
