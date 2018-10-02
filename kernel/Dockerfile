@@ -14,6 +14,8 @@ WORKDIR linux
 RUN make x86_64_defconfig
 RUN patch -p1 < ../hakase.patch
 RUN wget https://raw.githubusercontent.com/nichoski/kergen/master/kergen/depgen
+# for docker
+RUN yes | python3 ./depgen CONFIG_CGROUP_DEVICE CONFIG_MEMCG CONFIG_VETH CONFIG_BRIDGE CONFIG_BRIDGE_NETFILTER CONFIG_NETFILTER_XT_MATCH_IPVS CONFIG_DEVPTS_MULTIPLE_INSTANCES CONFIG_OVERLAY_FS
 RUN yes | python3 ./depgen CONFIG_USB_XHCI_PCI
 RUN yes "" | make oldconfig
 RUN sed -i 's/=m$/=y$/g' .config
