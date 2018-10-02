@@ -20,4 +20,4 @@ RUN wget https://raw.githubusercontent.com/nichoski/kergen/master/kergen/depgen
 RUN yes "" | make oldconfig
 RUN make -j`nproc` bzImage
 RUN make -j`nproc` bindeb-pkg
-# dpkg -i ../linux-*-4.14.34hakase_4.14.34hakase*.deb
+RUN dpkg -i ../linux-*-4.14.34hakase_4.14.34hakase*.deb
