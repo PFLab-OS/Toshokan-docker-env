@@ -1,23 +1,64 @@
-diff -r ../linux-org/Makefile ./Makefile
-5c5
-< EXTRAVERSION =
----
-> EXTRAVERSION = hakase
-diff -r ../linux-org/arch/x86/include/asm/apic.h ./arch/x86/include/asm/apic.h
-382a383,384
-> extern int wakeup_secondary_cpu_via_init(int phys_apicid, unsigned long start_eip);
-> extern void smpboot_setup_warm_reset_vector(unsigned long start_eip);
-diff -r ../linux-org/arch/x86/kernel/smpboot.c ./arch/x86/kernel/smpboot.c
-124c124
-< static inline void smpboot_setup_warm_reset_vector(unsigned long start_eip)
----
-> void smpboot_setup_warm_reset_vector(unsigned long start_eip)
-135a136
-> EXPORT_SYMBOL(smpboot_setup_warm_reset_vector);
-731c732
-< static int
----
-> int
-843a845
-> EXPORT_SYMBOL(wakeup_secondary_cpu_via_init);
-Only in ./arch/x86/kernel: smpboot.c.orig
+diff --git a/Makefile b/Makefile
+index ccd981892ef2..00ce43eb4099 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,7 +2,7 @@
+ VERSION = 4
+ PATCHLEVEL = 14
+ SUBLEVEL = 34
+-EXTRAVERSION =
++EXTRAVERSION = hakase
+ NAME = Petit Gorille
+ 
+ # *DOCUMENTATION*
+diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
+index 5f01671c68f2..e886276f51f0 100644
+--- a/arch/x86/include/asm/apic.h
++++ b/arch/x86/include/asm/apic.h
+@@ -380,6 +380,8 @@ extern struct apic *__apicdrivers[], *__apicdrivers_end[];
+  */
+ #ifdef CONFIG_SMP
+ extern int wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip);
++extern int wakeup_secondary_cpu_via_init(int phys_apicid, unsigned long start_eip);
++extern void smpboot_setup_warm_reset_vector(unsigned long start_eip);
+ #endif
+ 
+ #ifdef CONFIG_X86_LOCAL_APIC
+diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+index 65a0ccdc3050..68fc59ca2128 100644
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -121,7 +121,7 @@ int arch_update_cpu_topology(void)
+ 	return retval;
+ }
+ 
+-static inline void smpboot_setup_warm_reset_vector(unsigned long start_eip)
++void smpboot_setup_warm_reset_vector(unsigned long start_eip)
+ {
+ 	unsigned long flags;
+ 
+@@ -137,6 +137,7 @@ static inline void smpboot_setup_warm_reset_vector(unsigned long start_eip)
+ 							start_eip & 0xf;
+ 	pr_debug("3.\n");
+ }
++EXPORT_SYMBOL(smpboot_setup_warm_reset_vector);
+ 
+ static inline void smpboot_restore_warm_reset_vector(void)
+ {
+@@ -737,7 +738,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
+ 	return (send_status | accept_status);
+ }
+ 
+-static int
++int
+ wakeup_secondary_cpu_via_init(int phys_apicid, unsigned long start_eip)
+ {
+ 	unsigned long send_status = 0, accept_status = 0;
+@@ -850,6 +851,7 @@ wakeup_secondary_cpu_via_init(int phys_apicid, unsigned long start_eip)
+ 
+ 	return (send_status | accept_status);
+ }
++EXPORT_SYMBOL(wakeup_secondary_cpu_via_init);
+ 
+ /* reduce the number of lines printed when booting a large cpu count system */
+ static void announce_cpu(int cpu, int apicid)
