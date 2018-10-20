@@ -7,7 +7,8 @@ RUN fakeroot && tar xf ../alpine-minirootfs-3.8.0-x86_64.tar.gz
 RUN chmod 755 .
 COPY inittab etc/inittab
 COPY interfaces etc/network/interfaces
-RUN apk add --no-cache --initdb --root . sudo bash openssh-server openssh-sftp-server openrc busybox-initscripts
+RUN apk add --no-cache --initdb --root . sudo bash openssh-server openssh-sftp-server openrc busybox-initscripts linux-virt
+RUN cp boot/vmlinuz-virt ..
 RUN chroot . addgroup hakase
 RUN chroot . adduser -S -s /bin/sh -G hakase hakase
 RUN chroot . addgroup hakase wheel
@@ -68,6 +69,7 @@ MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
 
 RUN apk add --no-cache xterm
 COPY --from=build-qemu /install /
-COPY --from=livadk/toshokan_kernel_build /usr/src/linux/arch/x86/boot/bzImage .
+#COPY --from=livadk/toshokan_kernel_build /usr/src/linux/arch/x86/boot/bzImage .
+COPY --from=build-rootfs /vmlinuz-virt bzImage
 COPY --from=build-rootfs /rootfs .
 CMD /bin/sh
