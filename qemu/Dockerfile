@@ -1,3 +1,8 @@
+FROM livadk/toshokan_qemu_kernel AS get-kernel
+RUN mkdir /tmp/initramfs
+WORKDIR /tmp/initramfs
+RUN zcat /boot/initrd.img-4.13.0-45-generic | cpio -id
+
 FROM alpine:3.8 AS build-rootfs
 RUN apk add wget fakeroot
 RUN wget https://nl.alpinelinux.org/alpine/v3.8/releases/x86_64/alpine-minirootfs-3.8.0-x86_64.tar.gz
@@ -7,8 +12,7 @@ RUN fakeroot && tar xf ../alpine-minirootfs-3.8.0-x86_64.tar.gz
 RUN chmod 755 .
 COPY inittab etc/inittab
 COPY interfaces etc/network/interfaces
-RUN apk add --no-cache --initdb --root . sudo bash openssh-server openssh-sftp-server openrc busybox-initscripts linux-virt
-RUN cp boot/vmlinuz-virt ..
+RUN apk add --no-cache --initdb --root . sudo bash openssh-server openssh-sftp-server openrc busybox-initscripts
 RUN chroot . addgroup hakase
 RUN chroot . adduser -S -s /bin/sh -G hakase hakase
 RUN chroot . addgroup hakase wheel
@@ -41,6 +45,7 @@ RUN mkdir -m 700 home/hakase/.ssh
 COPY id_rsa.pub home/hakase/.ssh/authorized_keys
 RUN chroot . chown hakase:hakase /home/hakase/.ssh
 RUN chroot . chown hakase:hakase /home/hakase/.ssh/authorized_keys
+COPY --from=get-kernel /tmp/initramfs/lib/modules lib/modules
 RUN fakeroot && find | cpio --quiet -o -H newc | gzip -9 > ../rootfs
 WORKDIR /
 
@@ -69,7 +74,7 @@ MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
 
 RUN apk add --no-cache xterm
 COPY --from=build-qemu /install /
-#COPY --from=livadk/toshokan_kernel_build /usr/src/linux/arch/x86/boot/bzImage .
-COPY --from=build-rootfs /vmlinuz-virt bzImage
+COPY --from=get-kernel /boot/vmlinuz-4.13.0-45-generic vmlinuz-4.13.0-45-generic
+COPY --from=get-kernel /boot/initrd.img-4.13.0-45-generic initrd.img-4.13.0-45-generic
 COPY --from=build-rootfs /rootfs .
 CMD /bin/sh
