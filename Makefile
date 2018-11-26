@@ -11,5 +11,5 @@ push:
 	make -C build push
 	make -C ssh push
 	make -C gdb push
-	make -C kernel build
+	make -C kernel push
 	make -C qemu push
