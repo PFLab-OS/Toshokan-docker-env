@@ -75,6 +75,5 @@ MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
 RUN apk add --no-cache xterm
 COPY --from=build-qemu /install /
 COPY --from=get-kernel /boot/vmlinuz-4.13.0-45-generic vmlinuz-4.13.0-45-generic
-COPY --from=get-kernel /boot/initrd.img-4.13.0-45-generic initrd.img-4.13.0-45-generic
 COPY --from=build-rootfs /rootfs .
 CMD /bin/sh
