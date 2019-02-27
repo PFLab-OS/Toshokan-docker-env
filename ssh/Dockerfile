@@ -7,3 +7,4 @@ RUN chmod 700 /root/.ssh
 COPY id_rsa /root/.ssh
 COPY config /root/.ssh
 RUN chmod 600 /root/.ssh/config
+RUN chmod 600 /root/.ssh/id_rsa
