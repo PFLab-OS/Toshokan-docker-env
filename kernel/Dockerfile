@@ -8,4 +8,4 @@ RUN sed -i.bak  -s 's%http://archive.ubuntu.com/ubuntu/%http://ftp.jaist.ac.jp/p
 RUN sed -i.bak  -s 's%http://security.ubuntu.com/ubuntu/%http://ftp.jaist.ac.jp/pub/Linux/ubuntu/%g'  /etc/apt/sources.list
 
 RUN apt update
-RUN apt install -y linux-image-4.13.0-45-generic linux-headers-4.13.0-45-generic build-essential kernel-package
+RUN apt install -y initramfs-tools linux-image-4.13.0-45-generic linux-headers-4.13.0-45-generic build-essential kernel-package

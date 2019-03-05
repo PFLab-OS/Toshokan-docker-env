@@ -1,11 +1,12 @@
 FROM livadk/toshokan_qemu_kernel AS get-kernel
+RUN apt -y install cpio
 RUN mkdir /tmp/initramfs
 WORKDIR /tmp/initramfs
 RUN zcat /boot/initrd.img-4.13.0-45-generic | cpio -id
 
 FROM alpine:3.8 AS build-rootfs
 RUN apk add wget fakeroot
-RUN wget https://nl.alpinelinux.org/alpine/v3.8/releases/x86_64/alpine-minirootfs-3.8.0-x86_64.tar.gz
+RUN wget --no-check-certificate https://nl.alpinelinux.org/alpine/v3.8/releases/x86_64/alpine-minirootfs-3.8.0-x86_64.tar.gz
 RUN mkdir work
 WORKDIR /work
 RUN fakeroot && tar xf ../alpine-minirootfs-3.8.0-x86_64.tar.gz
@@ -71,7 +72,7 @@ RUN apt install -y \
 	  bison \
 	  wget \
 	  build-essential
-RUN wget https://download.qemu.org/qemu-2.12.0.tar.bz2
+RUN wget --no-check-certificate https://download.qemu.org/qemu-2.12.0.tar.bz2
 RUN tar xf qemu-2.12.0.tar.bz2
 RUN mkdir build-qemu
 WORKDIR build-qemu
