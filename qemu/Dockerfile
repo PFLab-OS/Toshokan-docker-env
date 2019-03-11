@@ -87,9 +87,6 @@ RUN apk add --no-cache xterm
 COPY --from=build-qemu /install /
 COPY --from=get-kernel /boot/vmlinuz-4.13.0-45-generic vmlinuz-4.13.0-45-generic
 COPY --from=build-rootfs /rootfs .
-CMD /bin/sh
-
-FROM qemu AS build-snapshot
 RUN qemu-img create -f qcow2 /backing.qcow2 5G
 COPY id_rsa /
 RUN chmod 600 /id_rsa
