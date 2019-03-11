@@ -1,4 +1,12 @@
-.PHONY: build push
+.PHONY: build push test
+
+
+test:
+	make -C build test
+	make -C ssh test
+	make -C gdb test
+	make -C kernel test
+	make -C qemu test
 
 build:
 	make -C build build

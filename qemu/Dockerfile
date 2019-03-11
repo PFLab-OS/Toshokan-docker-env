@@ -79,6 +79,7 @@ WORKDIR build-qemu
 RUN ../qemu-2.12.0/configure --enable-curses --target-list=x86_64-softmmu --static --prefix=/install
 RUN make -j`nproc`
 RUN make install
+RUN rm -r /install/var/run
 
 FROM alpine:3.8 AS qemu
 MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
@@ -86,9 +87,9 @@ MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
 RUN apk add --no-cache xterm
 COPY --from=build-qemu /install /
 COPY --from=get-kernel /boot/vmlinuz-4.13.0-45-generic vmlinuz-4.13.0-45-generic
-COPY --from=build-rootfs /rootfs .
+COPY --from=build-rootfs /rootfs /rootfs
 RUN qemu-img create -f qcow2 /backing.qcow2 5G
-COPY id_rsa /
+COPY id_rsa /id_rsa
 RUN chmod 600 /id_rsa
 RUN apk add openssh-client
 CMD qemu-system-x86_64 -cpu Haswell -s -d cpu_reset -no-reboot -smp 5 -m 4G -D /qemu.log -hda /backing.qcow2 -kernel /vmlinuz-4.13.0-45-generic -initrd /rootfs -append 'root=/dev/ram rdinit=/sbin/init memmap=0x70000\$4K memmap=0x40000000\$0x40000000 console=ttyS0,115200' -net nic -net user,hostfwd=tcp::2222-:22 -serial telnet::4444,server,nowait -monitor telnet::4445,server,nowait -nographic
