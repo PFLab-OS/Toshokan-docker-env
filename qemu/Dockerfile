@@ -81,15 +81,27 @@ RUN make -j`nproc`
 RUN make install
 RUN rm -r /install/var/run
 
-FROM alpine:3.8 AS qemu
-MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
-
+FROM alpine:3.8 AS build-snapshot
 RUN apk add --no-cache xterm
 COPY --from=build-qemu /install /
 COPY --from=get-kernel /boot/vmlinuz-4.13.0-45-generic vmlinuz-4.13.0-45-generic
 COPY --from=build-rootfs /rootfs /rootfs
 RUN qemu-img create -f qcow2 /backing.qcow2 5G
-COPY id_rsa /id_rsa
+COPY id_rsa /
 RUN chmod 600 /id_rsa
 RUN apk add openssh-client
-CMD qemu-system-x86_64 -cpu Haswell -s -d cpu_reset -no-reboot -smp 5 -m 4G -D /qemu.log -hda /backing.qcow2 -kernel /vmlinuz-4.13.0-45-generic -initrd /rootfs -append 'root=/dev/ram rdinit=/sbin/init memmap=0x70000\$4K memmap=0x40000000\$0x40000000 console=ttyS0,115200' -net nic -net user,hostfwd=tcp::2222-:22 -serial telnet::4444,server,nowait -monitor telnet::4445,server,nowait -nographic
+RUN sh -c "qemu-system-x86_64 -cpu Haswell -d cpu_reset -no-reboot -smp 5 -m 4G -D /tmp/qemu.log -hda /backing.qcow2 -kernel /vmlinuz-4.13.0-45-generic -initrd /rootfs -append 'root=/dev/ram rdinit=/sbin/init memmap=0x70000\$4K memmap=0x40000000\$0x40000000 console=ttyS0,115200' -net nic -net user,hostfwd=tcp::2222-:22 -serial telnet::4444,server,nowait -monitor telnet::4445,server,nowait -nographic > /dev/null 2>&1 &" \
+ && sh -c "while ! sh -c 'ssh -o ConnectTimeout=3 -o LogLevel=quiet -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null -i /id_rsa -p 2222 hakase@localhost exit 0 > /dev/null 2>&1' ; do sleep 1; done" \
+  && sh -c "echo 'stop' | nc localhost 4445" \
+   && sh -c "echo 'savevm snapshot1' | nc localhost 4445" \
+    && sh -c "echo 'quit' | nc localhost 4445"
+
+FROM alpine:3.8
+MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
+
+COPY --from=build-qemu /install /
+COPY --from=get-kernel /boot/vmlinuz-4.13.0-45-generic vmlinuz-4.13.0-45-generic
+COPY --from=build-rootfs /rootfs /rootfs
+COPY --from=build-snapshot /backing.qcow2 /
+CMD qemu-system-x86_64 -cpu Haswell -s -d cpu_reset -no-reboot -smp 5 -m 4G -D /qemu.log -loadvm snapshot1 -hda /backing.qcow2 -net nic -net user,hostfwd=tcp::2222-:22 -serial telnet::4444,server,nowait -monitor telnet::4445,server,nowait -nographic
+EXPOSE 2222 4444 4445 1234

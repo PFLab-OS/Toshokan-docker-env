@@ -9,4 +9,4 @@ jobs:
       - run:
           command: |
             apk --update add make
-            make test
+            make check
