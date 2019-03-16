@@ -99,6 +99,7 @@ RUN sh -c "qemu-system-x86_64 -cpu Haswell -d cpu_reset -no-reboot -smp 5 -m 4G 
 FROM alpine:3.8
 MAINTAINER Shinichi Awamoto <sap.pcmail@gmail.com>
 
+COPY --from=build-qemu /install /install
 COPY --from=build-qemu /install /
 COPY --from=get-kernel /boot/vmlinuz-4.13.0-45-generic vmlinuz-4.13.0-45-generic
 COPY --from=build-rootfs /rootfs /rootfs
